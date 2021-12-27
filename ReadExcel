@@ -1,0 +1,98 @@
+package chapter1;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class MouseHover1 {
+	 
+	 public static WebDriver driver;
+	 
+	 public static void main(String[] args) throws Exception {
+		 VerifyBrokenImages();
+		}
+
+		public static void VerifyBrokenImages() throws Exception {
+			
+			//...............................................
+		
+			FileInputStream file=new FileInputStream("D:\\neptune\\test.xlsx");
+			
+		
+			XSSFWorkbook workbook=new XSSFWorkbook(file);
+			
+			XSSFSheet sheet=workbook.getSheet("Sheet1");
+			
+			int rows=sheet.getLastRowNum();
+			int cols=sheet.getRow(0).getLastCellNum();
+			
+			for(int r=0;r<=rows;r++)
+			{
+				XSSFRow row=sheet.getRow(r);  
+				
+				for(int c=0;c<cols;c++) 
+				{
+					XSSFCell cell=row.getCell(c);
+					String abc= cell.getStringCellValue();
+					
+					//System.out.print(cell.getStringCellValue()); 
+					System.out.println();
+					
+					//......................................................
+				
+					WebDriver driver = new ChromeDriver();
+			driver.get(abc);
+			
+			Scanner sc= new Scanner(System.in);
+			Thread.sleep(5000);
+			System.out.print("Enter any number- ");  
+			int a= sc.nextInt(); 
+			System.out.println(cell.getStringCellValue()); 
+			 HashMap<String,String> images=new HashMap<String,String>();
+			//List<WebElement> images = driver.findElements(By.className("coveo-list-layout CoveoResult "));
+			List<WebElement> coveoResult = driver.findElements(By.className("coveo-list-layout"));
+			for (WebElement item : coveoResult) 
+			{ 
+				WebElement coveowrap = item.findElement(By.className("nep-coveo-wrap"));
+				WebElement coveocard = coveowrap.findElement(By.className("nep-coveo-card"));
+				WebElement coveothumbnail = coveocard.findElement(By.className("nep-coveo-thumbnail"));
+				WebElement anchor = coveothumbnail.findElement(By.tagName("a"));
+				String sku = anchor.getAttribute("href");
+				WebElement img = anchor.findElement(By.tagName("img"));
+				String imageSrc = img.getAttribute("src");
+				int width = Integer.parseInt(img.getAttribute("naturalWidth"));
+
+				//int a=Integer.parseInt(width)
+
+				if(width == 0) {
+					images.put(sku, null);
+				}else {					
+				images.put(sku, imageSrc);
+				}
+
+			}
+
+			  for(Map.Entry m : images.entrySet()){   
+				    System.out.println(m.getKey()+">> "+m.getValue());  
+				    //...................
+				    
+			  }
+
+		}
+		 
+	 }
+		}}
+	
